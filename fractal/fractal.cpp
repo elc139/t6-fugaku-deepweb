@@ -23,7 +23,7 @@ Author: Martin Burtscher
 #include <cstdlib>
 #include <sys/time.h>
 #include "fractal.h"
-#include <iostream>
+
 static const double Delta = 0.001;
 static const double xMid =  0.23701;
 static const double yMid =  0.521;
@@ -81,7 +81,6 @@ int main(int argc, char *argv[])
 
   // verify result by writing frames to BMP files
   if ((width <= 256) && (frames <= 100)) {
-    std::cout<<"Gravando imagens"<<std::endl;
     for (int frame = 0; frame < frames; frame++) {
       char name[32];
       sprintf(name, "fractal%d.bmp", frame + 1000);

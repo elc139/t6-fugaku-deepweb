@@ -24,6 +24,8 @@ Author: Martin Burtscher
 #include <sys/time.h>
 #include "fractalpar.h"
 #include <iostream>
+#include <mpi.h>
+
 static const double Delta = 0.001;
 static const double xMid =  0.23701;
 static const double yMid =  0.521;
