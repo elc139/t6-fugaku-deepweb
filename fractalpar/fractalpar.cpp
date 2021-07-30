@@ -32,20 +32,25 @@ static const double yMid =  0.521;
 
 int main(int argc, char *argv[])
 {
-  // Uso ./fractalpar <largura_da_imagem> <numero_de_frames> <numero_de_processos>
-
+  MPI_Status status;
+  int num_processes,process_rank, source, destination, tag;
+  
+  MPI_Init(NULL,NULL);
+  MPI_Comm_size(MPI_COMM_WORLD, &num_processes);
+  MPI_Comm_rank(MPI_COMM_WORLD, &process_rank);
+  
+  std::cout << "Numero de processos: " << num_processes << std::endl;
+ 
   // check command line
-  if (argc != 4) {fprintf(stderr, "usage: %s frame_width num_frames num_processes\n", argv[0]); exit(-1);}
+  if (argc != 3) {fprintf(stderr, "usage: %s frame_width num_frames\n", argv[0]); exit(-1);}
   int width = atoi(argv[1]);
   if (width < 10) {fprintf(stderr, "error: frame_width must be at least 10\n"); exit(-1);}
   int frames = atoi(argv[2]);
   if (frames < 1) {fprintf(stderr, "error: num_frames must be at least 1\n"); exit(-1);}
-  int processes = atoi(argv[3]);
-  if (processes < 1) {fprintf(stderr, "error: num_processes must be at least 1\n"); exit(-1);}
+  
   printf("Fractal v1.6 [serial|parallel]\n");
-  printf("computing %d frames of %d by %d fractal using %d processes...\n", frames, width, width, processes);
+  printf("computing %d frames of %d by %d fractal\n", frames, width, width);
 
-  MPI_Init(NULL,NULL);
   // allocate picture array
   unsigned char* pic = new unsigned char[frames * width * width];
 
@@ -53,12 +58,14 @@ int main(int argc, char *argv[])
   timeval start, end;
   gettimeofday(&start, NULL);
 
+
   // compute frames
   double delta = Delta;
   for (int frame = 0; frame < frames; frame++) {
     const double xMin = xMid - delta;
     const double yMin = yMid - delta;
     const double dw = 2.0 * delta / width;
+    // paralelizar isso
     for (int row = 0; row < width; row++) {
       const double cy = yMin + row * dw;
       for (int col = 0; col < width; col++) {
@@ -79,6 +86,7 @@ int main(int argc, char *argv[])
     }
     delta *= 0.98;
   }
+  MPI_Finalize();
 
   // end time
   gettimeofday(&end, NULL);
@@ -96,6 +104,5 @@ int main(int argc, char *argv[])
   }
 
   delete [] pic;
-  MPI_Finalize();
   return 0;
 }
