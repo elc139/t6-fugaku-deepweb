@@ -59,11 +59,19 @@ int main(int argc, char *argv[])
 
   // compute frames
   double delta = Delta;
-  std::cout << "process rank " << process_rank <<std::endl;
-  int fatia = frames/(num_processes-1) + 1;
+  int fatia = frames/(num_processes-1); //fatia 3
+  int restante = frames - ((num_processes-1) * fatia); //restante 1
+  std::cout << "restante : " << restante << std::endl; 
+  int fatia_ultimo = fatia + restante; // fatiaultimo 4
+  int fatia_padrao = fatia;
+  int aux = 0;
   //for (int frame = 0; frame < frames; frame++) {
   if(process_rank != 0) {
-    for (int frame = 0 + (process_rank-1)*(fatia); frame < (process_rank)*(fatia) && frame < frames; frame++) {
+    if(num_processes-process_rank==1){
+      fatia = fatia_ultimo;
+      aux = 1;
+    }
+    for (int frame = 0 + (process_rank-1)*(fatia_padrao); frame < (process_rank)*(fatia_padrao) + aux; frame++) {
       std::cout << "Frame : " << frame << "| rank : " << process_rank << "| fatia : " << fatia << std::endl;
       const double xMin = xMid - delta;
       const double yMin = yMid - delta;
