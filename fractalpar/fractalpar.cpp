@@ -26,6 +26,8 @@ Author: Martin Burtscher
 #include <iostream>
 #include <mpi.h>
 #include <math.h>
+#include <stdio.h>
+#define main_process 0
 static const double Delta = 0.001;
 static const double xMid =  0.23701;
 static const double yMid =  0.521;
@@ -60,9 +62,9 @@ int main(int argc, char *argv[])
   // compute frames
   double delta = Delta;
   std::cout << "process rank " << process_rank <<std::endl;
-  int fatia = frames/(num_processes-1) + 1;
+  int fatia = frames/(num_processes-1);
   //for (int frame = 0; frame < frames; frame++) {
-  if(process_rank != 0) {
+  if(process_rank != main_process) {
     for (int frame = 0 + (process_rank-1)*(fatia); frame < (process_rank)*(fatia) && frame < frames; frame++) {
       std::cout << "Frame : " << frame << "| rank : " << process_rank << "| fatia : " << fatia << std::endl;
       const double xMin = xMid - delta;
@@ -86,17 +88,18 @@ int main(int argc, char *argv[])
           pic[frame * width * width + row * width + col] = (unsigned char)depth;
         }
       }
-      delta *= pow(0.98,frame+1);
+      delta = Delta * pow(0.98,frame+1);
+      std::cout << "frame: " << frame << "| delta: " << delta << std::endl;
     }
     // Mandando a partir do primeiro pixel do primeiro frame da fatia. 
     // Count eh fatia*width*width pois indica quantas posicoes vao ser mandadas apos o primeiro pixel da primeira fatia 
-    MPI_Send(&pic[(process_rank-1)*(fatia) * width * width],fatia*width*width,MPI_INT32_T,0,0,MPI_COMM_WORLD);
+    MPI_Send(&pic[(process_rank-1)*(fatia) * width * width],fatia*width*width,MPI_INT,main_process,process_rank,MPI_COMM_WORLD);
   }
   else
   {
     for (int source = 1; source < num_processes; source++)
     {
-      MPI_Recv(&pic[(source-1)*(fatia) * width * width],fatia*width*width,MPI_INT32_T,source,0,MPI_COMM_WORLD,&status);
+      MPI_Recv(&pic[(source-1)*(fatia) * width * width],fatia*width*width,MPI_INT,source,source,MPI_COMM_WORLD,&status);
     }
   }
   
