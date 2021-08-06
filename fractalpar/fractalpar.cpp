@@ -71,7 +71,7 @@ int main(int argc, char *argv[])
       fatia = fatia_ultimo;
       aux = 1;
     }
-    for (int frame = 0 + (process_rank-1)*(fatia_padrao); frame < (process_rank)*(fatia_padrao) + aux; frame++) {
+    for (int frame = 0 + (process_rank-1)*(fatia_padrao); frame < (process_rank)*(fatia) + aux; frame++) {
       std::cout << "Frame : " << frame << "| rank : " << process_rank << "| fatia : " << fatia << std::endl;
       const double xMin = xMid - delta;
       const double yMin = yMid - delta;
@@ -98,17 +98,17 @@ int main(int argc, char *argv[])
     }
     // Mandando a partir do primeiro pixel do primeiro frame da fatia. 
     // Count eh fatia*width*width pois indica quantas posicoes vao ser mandadas apos o primeiro pixel da primeira fatia 
-    MPI_Send(&pic[(process_rank-1)*(fatia) * width * width],fatia*width*width,MPI_INT32_T,0,0,MPI_COMM_WORLD);
+    MPI_Send(&pic[(process_rank-1)*(fatia) * width * width],fatia*width*width,MPI_UNSIGNED_CHAR,0,0,MPI_COMM_WORLD);
   }
   else
   {
     for (int source = 1; source < num_processes; source++)
     {
-      MPI_Recv(&pic[(source-1)*(fatia) * width * width],fatia*width*width,MPI_INT32_T,source,0,MPI_COMM_WORLD,&status);
+      MPI_Recv(&pic[(source-1)*(fatia) * width * width],fatia*width*width,MPI_UNSIGNED_CHAR,source,0,MPI_COMM_WORLD,&status);
     }
   }
   
-
+  std::cout<< "chegou ate aqui" <<std::endl;
   // end time
   gettimeofday(&end, NULL);
   double runtime = end.tv_sec + end.tv_usec / 1000000.0 - start.tv_sec - start.tv_usec / 1000000.0;
