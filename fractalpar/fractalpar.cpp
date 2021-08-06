@@ -93,13 +93,13 @@ int main(int argc, char *argv[])
     }
     // Mandando a partir do primeiro pixel do primeiro frame da fatia. 
     // Count eh fatia*width*width pois indica quantas posicoes vao ser mandadas apos o primeiro pixel da primeira fatia 
-    MPI_Send(&pic[(process_rank-1)*(fatia) * width * width],fatia*width*width,MPI_INT,main_process,process_rank,MPI_COMM_WORLD);
+    MPI_Send(&pic[(process_rank-1)*(fatia) * width * width],fatia*width*width,MPI_UNSIGNED_CHAR,main_process,process_rank,MPI_COMM_WORLD);
   }
   else
   {
     for (int source = 1; source < num_processes; source++)
     {
-      MPI_Recv(&pic[(source-1)*(fatia) * width * width],fatia*width*width,MPI_INT,source,source,MPI_COMM_WORLD,&status);
+      MPI_Recv(&pic[(source-1)*(fatia) * width * width],fatia*width*width,MPI_UNSIGNED_CHAR,source,source,MPI_COMM_WORLD,&status);
     }
   }
   
