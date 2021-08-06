@@ -61,13 +61,16 @@ int main(int argc, char *argv[])
 
   // compute frames
   double delta = Delta;
-  std::cout << "process rank " << process_rank <<std::endl;
   int fatia = frames/(num_processes-1);
-  //for (int frame = 0; frame < frames; frame++) {
-  if(process_rank != main_process) {
-    for (int frame = 0 + (process_rank-1)*(fatia); frame < (process_rank)*(fatia) && frame < frames; frame++) {
+  int restante = frames - ((num_processes-1) * fatia);
+  if(process_rank != 0) {
+    if(num_processes - process_rank != 1){
+      restante =0;
+    }
+    std::cout << "rank: " << process_rank << " restante : " << restante << std::endl; 
+    for (int frame = 0 + (process_rank-1)*(fatia); frame < (process_rank*fatia)+restante; frame++) {
       delta = Delta * pow(0.98,frame);
-      std::cout << "Frame : " << frame << "| rank : " << process_rank << "| fatia : " << fatia << std::endl;
+      std::cout << "Frame : " << frame << "| rank : " << process_rank << "| fatia : " << fatia+restante << std::endl;
       const double xMin = xMid - delta;
       const double yMin = yMid - delta;
       const double dw = 2.0 * delta / width;
@@ -89,26 +92,25 @@ int main(int argc, char *argv[])
           pic[frame * width * width + row * width + col] = (unsigned char)depth;
         }
       }
-      std::cout << "frame: " << frame << "| delta: " << delta << std::endl;
     }
-    // Mandando a partir do primeiro pixel do primeiro frame da fatia. 
-    // Count eh fatia*width*width pois indica quantas posicoes vao ser mandadas apos o primeiro pixel da primeira fatia 
-    MPI_Send(&pic[(process_rank-1)*(fatia) * width * width],fatia*width*width,MPI_UNSIGNED_CHAR,main_process,process_rank,MPI_COMM_WORLD);
+    MPI_Send(&pic[(process_rank-1)*(fatia) * width * width],(fatia+restante)*width*width,MPI_UNSIGNED_CHAR,0,0,MPI_COMM_WORLD);
   }
   else
   {
     for (int source = 1; source < num_processes; source++)
     {
-      MPI_Recv(&pic[(source-1)*(fatia) * width * width],fatia*width*width,MPI_UNSIGNED_CHAR,source,source,MPI_COMM_WORLD,&status);
+      if(num_processes-source != 1)
+        MPI_Recv(&pic[(source-1)*(fatia) * width * width],(fatia)*width*width,MPI_UNSIGNED_CHAR,source,0,MPI_COMM_WORLD,&status);
+      else
+        MPI_Recv(&pic[(source-1)*(fatia) * width * width],(fatia+restante)*width*width,MPI_UNSIGNED_CHAR,source,0,MPI_COMM_WORLD,&status);
     }
   }
   
-
   // end time
-  gettimeofday(&end, NULL);
-  double runtime = end.tv_sec + end.tv_usec / 1000000.0 - start.tv_sec - start.tv_usec / 1000000.0;
-  printf("compute time: %.4f s\n", runtime);
   if(process_rank==0){
+    gettimeofday(&end, NULL);
+    double runtime = end.tv_sec + end.tv_usec / 1000000.0 - start.tv_sec - start.tv_usec / 1000000.0;
+    printf("compute time: %.4f s\n", runtime);
     if ((width <= 256) && (frames <= 100)) {
       std::cout<<"Gravando imagens"<<std::endl;
       for (int frame = 0; frame < frames; frame++) {
