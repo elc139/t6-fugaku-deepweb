@@ -26,6 +26,8 @@ Author: Martin Burtscher
 #include <iostream>
 #include <mpi.h>
 #include <math.h>
+#include <stdio.h>
+#define main_process 0
 static const double Delta = 0.001;
 static const double xMid =  0.23701;
 static const double yMid =  0.521;
