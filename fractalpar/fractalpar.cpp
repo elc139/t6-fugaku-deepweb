@@ -66,6 +66,7 @@ int main(int argc, char *argv[])
   //for (int frame = 0; frame < frames; frame++) {
   if(process_rank != main_process) {
     for (int frame = 0 + (process_rank-1)*(fatia); frame < (process_rank)*(fatia) && frame < frames; frame++) {
+      delta = Delta * pow(0.98,frame);
       std::cout << "Frame : " << frame << "| rank : " << process_rank << "| fatia : " << fatia << std::endl;
       const double xMin = xMid - delta;
       const double yMin = yMid - delta;
@@ -88,7 +89,6 @@ int main(int argc, char *argv[])
           pic[frame * width * width + row * width + col] = (unsigned char)depth;
         }
       }
-      delta = Delta * pow(0.98,frame+1);
       std::cout << "frame: " << frame << "| delta: " << delta << std::endl;
     }
     // Mandando a partir do primeiro pixel do primeiro frame da fatia. 
