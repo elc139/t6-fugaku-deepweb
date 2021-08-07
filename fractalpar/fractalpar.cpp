@@ -64,9 +64,7 @@ int main(int argc, char *argv[])
   int fatia = frames/(num_processes-1);
   int restante = frames - ((num_processes-1) * fatia);
   if(process_rank != 0) {
-    if(num_processes - process_rank != 1){
-      restante =0;
-    }
+    restante = num_processes - process_rank != 1? 0 : restante;
     std::cout << "rank: " << process_rank << " restante : " << restante << std::endl; 
     for (int frame = 0 + (process_rank-1)*(fatia); frame < (process_rank*fatia)+restante; frame++) {
       delta = Delta * pow(0.98,frame);
@@ -97,12 +95,11 @@ int main(int argc, char *argv[])
   }
   else
   {
+    int restanteaux = restante;
     for (int source = 1; source < num_processes; source++)
     {
-      if(num_processes-source != 1)
-        MPI_Recv(&pic[(source-1)*(fatia) * width * width],(fatia)*width*width,MPI_UNSIGNED_CHAR,source,0,MPI_COMM_WORLD,&status);
-      else
-        MPI_Recv(&pic[(source-1)*(fatia) * width * width],(fatia+restante)*width*width,MPI_UNSIGNED_CHAR,source,0,MPI_COMM_WORLD,&status);
+      restante = num_processes-source != 1 ? 0 : restanteaux; 
+      MPI_Recv(&pic[(source-1)*(fatia) * width * width],(fatia+restante)*width*width,MPI_UNSIGNED_CHAR,source,0,MPI_COMM_WORLD,&status);
     }
   }
   
