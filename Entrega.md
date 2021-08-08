@@ -9,4 +9,5 @@
 - [Animação personalizada]()
 
 ## Referências:
-- ...
+- [Conjunto de Mandelbrot](https://pt.wikipedia.org/wiki/Conjunto_de_Mandelbrot)
+- [O que é uma Fractal?](https://www.youtube.com/watch?v=UMbZJx9GLPE)
