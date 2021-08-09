@@ -5,7 +5,7 @@
 
 ## Links:
 - [Código paralelo desenvolvido](fractalpar/fractalpar.cpp)
-- [Slides elaborados](https://docs.google.com/presentation/d/1ChXK3Zl0suhMgIWCCcf29Z6oH8p5YHdoX4sLknDTYO0/edit?usp=sharing)
+- [Slides elaborados](https://docs.google.com/presentation/d/1DjDNqNwRu6uPjgVSJoU3iQIN8Hn-dCP1po4ZkPfN-00/edit?usp=sharing)
 - [Animação personalizada]()
 - [Tabela de resultados](https://docs.google.com/spreadsheets/d/15A-xNgfV-wLCp8YuQCPqs5H-CT4Z2XVMbuFgyhyMQEI/edit#gid=0)
 
